@@ -12,7 +12,7 @@ services:
       - key: DATABASE_URL
         value: "placeholder"
       - key: OPENAI_API_KEY
-        sync: false
+        value: "placeholder"
       - key: CORS_ORIGIN
         value: "*"
       - key: UPLOAD_DIR
