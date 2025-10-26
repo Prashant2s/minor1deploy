@@ -10,7 +10,7 @@ services:
     dockerContext: ./backend
     envVars:
       - key: DATABASE_URL
-       sync: false
+        value: "placeholder"
       - key: OPENAI_API_KEY
         sync: false
       - key: CORS_ORIGIN
@@ -48,7 +48,7 @@ services:
     dockerContext: ./university-portal
     envVars:
       - key: DATABASE_URL
-       sync: false
+       value: "placeholder"
       - key: SECRET_KEY
         generateValue: true
     healthCheckPath: /
