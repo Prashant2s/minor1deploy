@@ -27,6 +27,27 @@ def create_app() -> Flask:
         # Tables might already exist, which is fine
         print(f"Note: Database tables may already exist: {e}")
         pass
+    
+    # Run migration for field_type column
+    try:
+        from sqlalchemy import text
+        with get_engine().connect() as conn:
+            # Check if column exists
+            result = conn.execute(text("""
+                SELECT column_name FROM information_schema.columns 
+                WHERE table_name='extracted_fields' AND column_name='field_type'
+            """))
+            if not result.fetchone():
+                print("Adding field_type column...")
+                conn.execute(text("""
+                    ALTER TABLE extracted_fields 
+                    ADD COLUMN field_type VARCHAR(50) DEFAULT 'extracted' NOT NULL
+                """))
+                conn.commit()
+                print("✅ Added field_type column")
+    except Exception as e:
+        print(f"Migration note: {e}")
+        pass
 
     @app.teardown_appcontext
     def remove_session(exception=None):
