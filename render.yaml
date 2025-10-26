@@ -1,5 +1,4 @@
 services:
-
   # Backend API Service
   - type: web
     name: university-verifier-backend
@@ -48,7 +47,7 @@ services:
     dockerContext: ./university-portal
     envVars:
       - key: DATABASE_URL
-       value: "placeholder"
+        value: "placeholder"
       - key: SECRET_KEY
         generateValue: true
     healthCheckPath: /
