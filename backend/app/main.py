@@ -8,7 +8,13 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     # CORS configuration
-    CORS(app, origins=settings.CORS_ORIGIN.split(',') if ',' in settings.CORS_ORIGIN else [settings.CORS_ORIGIN])
+    CORS(
+        app,
+        origins=settings.CORS_ORIGIN.split(',') if ',' in settings.CORS_ORIGIN else [settings.CORS_ORIGIN],
+        allow_headers=['Content-Type', 'Authorization'],
+        methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        supports_credentials=True
+    )
 
     # DB
     init_engine(settings.DB_URL)

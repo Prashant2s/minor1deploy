@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button.jsx";
 
 export default function Login() {
   const [userType, setUserType] = useState("student");
@@ -214,25 +215,18 @@ export default function Login() {
             />
           </div>
 
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            fullWidth
             style={{
-              width: "100%",
               padding: "14px",
-              background: "#2E5BBA",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
               fontSize: "16px",
               fontWeight: "600",
-              cursor: "pointer",
-              transition: "background 0.3s"
             }}
-            onMouseEnter={(e) => e.target.style.background = "#1e3f8a"}
-            onMouseLeave={(e) => e.target.style.background = "#2E5BBA"}
           >
             Login
-          </button>
+          </Button>
         </form>
 
         <div style={{

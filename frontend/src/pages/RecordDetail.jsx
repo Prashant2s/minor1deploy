@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios.js";
+import Button from "../components/Button.jsx";
 
 function formatValue(key, value) {
   const s = String(value ?? "");
@@ -80,11 +81,6 @@ export default function RecordDetail() {
       alert("Export failed. Please try again.");
     }
   };
-
-  const imageUrl = useMemo(() => {
-    const base = (api.defaults.baseURL || "").replace(/\/$/, "");
-    return `${base}/certificates/${id}/image`;
-  }, [id]);
 
   useEffect(() => {
     (async () => {
@@ -229,97 +225,18 @@ export default function RecordDetail() {
           Certificate Details - #{data.id}
         </h2>
         <div style={{ display: "flex", gap: "12px" }}>
-          <button
-            onClick={handleDownloadFile}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
-          >
+          <Button variant="success" onClick={handleDownloadFile}>
             Download File
-          </button>
-          <button
-            onClick={handleExportData}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#17a2b8",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontSize: "14px",
-              fontWeight: "500",
-            }}
-          >
+          </Button>
+          <Button variant="info" onClick={handleExportData}>
             Export Data
-          </button>
+          </Button>
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          gap: "24px",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        {/* Certificate Image */}
-        <div style={{ flex: "0 0 350px" }}>
-          <div
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <h3 style={{ marginTop: 0, color: "#555" }}>Certificate Image</h3>
-            <img
-              src={imageUrl}
-              alt={`Certificate ${data.id}`}
-              style={{
-                width: "100%",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                maxHeight: "500px",
-                objectFit: "contain",
-                backgroundColor: "#fff",
-              }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.nextElementSibling.style.display = 'flex';
-              }}
-            />
-            <div
-              style={{
-                display: "none",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "40px",
-                backgroundColor: "#f8f9fa",
-                border: "2px dashed #ddd",
-                borderRadius: "4px",
-                color: "#666",
-                textAlign: "center",
-              }}
-            >
-              <div style={{ fontSize: "48px", marginBottom: "12px" }}>📄</div>
-              <div style={{ fontSize: "14px", fontWeight: "500" }}>Image preview unavailable</div>
-              <div style={{ fontSize: "12px", marginTop: "8px", color: "#999" }}>Use "Download File" button to view certificate</div>
-            </div>
-          </div>
-        </div>
-
+      <div>
         {/* Extracted Data Table (Two-column dark table) */}
-        <div style={{ flex: "1", minWidth: "400px" }}>
+        <div style={{ width: "100%" }}>
           <div
             style={{
               padding: "20px",

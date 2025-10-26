@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios.js";
+import Button from "../components/Button.jsx";
 
 export default function MyCertificates() {
   const [records, setRecords] = useState([]);
@@ -316,41 +317,25 @@ export default function MyCertificates() {
                       >
                         View
                       </Link>
-                      <button
+                      <Button
+                        variant="success"
                         onClick={() =>
                           handleDownloadFile(
                             record.id,
                             record.original_filename
                           )
                         }
-                        style={{
-                          backgroundColor: "#28a745",
-                          color: "white",
-                          padding: "4px 8px",
-                          border: "none",
-                          borderRadius: 4,
-                          fontSize: "11px",
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                        }}
+                        style={{ padding: "4px 8px", fontSize: "11px" }}
                       >
                         Download
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="info"
                         onClick={() => handleExportData(record.id)}
-                        style={{
-                          backgroundColor: "#17a2b8",
-                          color: "white",
-                          padding: "4px 8px",
-                          border: "none",
-                          borderRadius: 4,
-                          fontSize: "11px",
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                        }}
+                        style={{ padding: "4px 8px", fontSize: "11px" }}
                       >
                         Export
-                      </button>
+                      </Button>
                     </div>
                   </td>
                 </tr>

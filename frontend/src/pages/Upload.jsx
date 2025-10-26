@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/axios.js";
+import Button from "../components/Button.jsx";
 
 export default function Upload() {
   const [file, setFile] = useState(null);
@@ -90,36 +91,19 @@ export default function Upload() {
                 flex: "1",
               }}
             />
-            <button
+            <Button
               type="submit"
+              variant="primary"
               disabled={!file || loading}
               style={{
                 padding: "14px 28px",
-                backgroundColor: !file || loading ? "#ccc" : "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
                 fontSize: "16px",
                 fontWeight: "600",
-                cursor: !file || loading ? "not-allowed" : "pointer",
-                transition: "all 0.2s ease",
                 whiteSpace: "nowrap",
-              }}
-              onMouseEnter={(e) => {
-                if (!(!file || loading)) {
-                  e.target.style.backgroundColor = "#0056b3";
-                  e.target.style.transform = "translateY(-1px)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!(!file || loading)) {
-                  e.target.style.backgroundColor = "#007bff";
-                  e.target.style.transform = "translateY(0)";
-                }
               }}
             >
               {loading ? "Uploading..." : "Upload Certificate"}
-            </button>
+            </Button>
           </div>
         </form>
         {error && (

@@ -14,20 +14,9 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 api_bp = Blueprint("api", __name__)
 
-def add_cors(response):
-    """ CORS headers ."""
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    return response
-
 # Authentication endpoints
-@api_bp.route("/auth/register", methods=['POST', 'OPTIONS'])
+@api_bp.route("/auth/register", methods=['POST'])
 def register():
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         data = request.get_json()
         
@@ -35,15 +24,11 @@ def register():
         required_fields = ['username', 'email', 'password', 'user_type']
         for field in required_fields:
             if not data.get(field):
-                response = jsonify({"error": f"Missing required field: {field}"})
-                response.status_code = 400
-                return add_cors(response)
+                return jsonify({"error": f"Missing required field: {field}"}), 400
         
         user_type = data['user_type']
         if user_type not in ['student', 'university']:
-            response = jsonify({"error": "user_type must be 'student' or 'university'"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "user_type must be 'student' or 'university'"}), 400
         
         # Check if user already exists
         existing_user = db_session.query(User).filter(
@@ -51,9 +36,7 @@ def register():
         ).first()
         
         if existing_user:
-            response = jsonify({"error": "Username or email already exists"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "Username or email already exists"}), 400
         
         # Create new user
         user = User(
@@ -78,7 +61,7 @@ def register():
         # Generate token
         token = generate_token(user.id, user.user_type, user.username)
         
-        response = jsonify({
+        return jsonify({
             "message": "User registered successfully",
             "token": token,
             "user": {
@@ -88,30 +71,21 @@ def register():
                 "user_type": user.user_type
             }
         })
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Registration failed: {str(e)}")
         db_session.rollback()
-        response = jsonify({"error": "Registration failed"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Registration failed"}), 500
 
-@api_bp.route("/auth/login", methods=['POST', 'OPTIONS'])
+@api_bp.route("/auth/login", methods=['POST'])
 def login():
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')
         
         if not username or not password:
-            response = jsonify({"error": "Username and password required"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "Username and password required"}), 400
         
         # Find user by username or email
         user = db_session.query(User).filter(
@@ -119,19 +93,15 @@ def login():
         ).first()
         
         if not user or not user.check_password(password):
-            response = jsonify({"error": "Invalid credentials"})
-            response.status_code = 401
-            return add_cors(response)
+            return jsonify({"error": "Invalid credentials"}), 401
         
         if not user.is_active:
-            response = jsonify({"error": "Account is deactivated"})
-            response.status_code = 401
-            return add_cors(response)
+            return jsonify({"error": "Account is deactivated"}), 401
         
         # Generate token
         token = generate_token(user.id, user.user_type, user.username)
         
-        response = jsonify({
+        return jsonify({
             "message": "Login successful",
             "token": token,
             "user": {
@@ -141,29 +111,20 @@ def login():
                 "user_type": user.user_type
             }
         })
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Login failed: {str(e)}")
-        response = jsonify({"error": "Login failed"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Login failed"}), 500
 
-@api_bp.route("/auth/me", methods=['GET', 'OPTIONS'])
+@api_bp.route("/auth/me", methods=['GET'])
 @require_auth
 def get_current_user_info(current_user):
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         user = db_session.query(User).filter(User.id == current_user['user_id']).first()
         if not user:
-            response = jsonify({"error": "User not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "User not found"}), 404
         
-        response = jsonify({
+        return jsonify({
             "user": {
                 "id": user.id,
                 "username": user.username,
@@ -175,13 +136,10 @@ def get_current_user_info(current_user):
                 "university_code": user.university_code
             }
         })
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Failed to get user info: {str(e)}")
-        response = jsonify({"error": "Failed to get user info"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Failed to get user info"}), 500
 
 def simple_university_verification(extracted_fields: dict) -> dict:
     """Simple verification logic directly in routes."""
@@ -212,28 +170,18 @@ def simple_university_verification(extracted_fields: dict) -> dict:
         logger.error(f"Verification failed: {str(e)}")
         return verification_result
 
-@api_bp.route("/certificates/upload", methods=['POST', 'OPTIONS'])
+@api_bp.route("/certificates/upload", methods=['POST'])
 def upload_certificate():
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         if 'file' not in request.files:
-            response = jsonify({"error": "No file provided"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "No file provided"}), 400
             
         file = request.files['file']
         if file.filename == '':
-            response = jsonify({"error": "No file selected"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "No file selected"}), 400
             
         if not is_allowed_file(file.filename):
-            response = jsonify({"error": "Invalid file type. Allowed: PDF, JPG, JPEG, PNG, TIFF, BMP, WEBP"})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "Invalid file type. Allowed: PDF, JPG, JPEG, PNG, TIFF, BMP, WEBP"}), 400
 
         filename = secure_filename(file.filename)
         upload_path = Path(settings.UPLOAD_DIR)
@@ -243,9 +191,7 @@ def upload_certificate():
         ocr_text = run_ocr(processed_path)
         
         if not ocr_text.strip():
-            response = jsonify({"error": "No text could be extracted from the certificate. Please ensure the image is clear and readable."})
-            response.status_code = 400
-            return add_cors(response)
+            return jsonify({"error": "No text could be extracted from the certificate. Please ensure the image is clear and readable."}), 400
         
         extracted_fields = extract_fields_with_ai(ocr_text)
         summary = generate_ai_summary(extracted_fields)
@@ -315,30 +261,22 @@ def upload_certificate():
             "subjects": extracted_fields.get("subjects", [])
         }
         
-        response = jsonify({
+        return jsonify({
             "id": cert.id,
             "file_type": file_type,
             "summary": summary,
             "tabular_data": tabular_data,
             "verification": verification,
             "confidence_score": verification.get('confidence_score', 0.0)
-        })
-        response.status_code = 201
-        return add_cors(response)
+        }), 201
         
     except Exception as e:
         db_session.rollback()
         logger.error(f"Certificate upload failed: {str(e)}")
-        response = jsonify({"error": f"Processing failed: {str(e)}"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": f"Processing failed: {str(e)}"}), 500
 
-@api_bp.route("/certificates", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates", methods=['GET'])
 def list_certificates():
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         limit = min(int(request.args.get('limit', 20)), 100)
         offset = int(request.args.get('offset', 0))
@@ -372,27 +310,18 @@ def list_certificates():
                 "tabular_data": tabular_data
             })
         
-        response = jsonify({"certificates": result, "count": len(result), "limit": limit, "offset": offset})
-        return add_cors(response)
+        return jsonify({"certificates": result, "count": len(result), "limit": limit, "offset": offset})
         
     except Exception as e:
         logger.error(f"Failed to list certificates: {str(e)}")
-        response = jsonify({"error": "Failed to fetch certificates"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Failed to fetch certificates"}), 500
 
-@api_bp.route("/certificates/<int:cert_id>", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates/<int:cert_id>", methods=['GET'])
 def get_certificate(cert_id: int):
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         cert = db_session.get(Certificate, cert_id)
         if not cert:
-            response = jsonify({"error": "Certificate not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "Certificate not found"}), 404
         
         # Extract structured data from fields
         extracted_fields = {}
@@ -431,7 +360,7 @@ def get_certificate(cert_id: int):
             "subjects": extracted_fields.get("subjects", {}).get("value", [])
         }
         
-        response = jsonify({
+        return jsonify({
             "id": cert.id,
             "status": cert.status,
             "created_at": cert.created_at.isoformat(),
@@ -440,92 +369,60 @@ def get_certificate(cert_id: int):
             "verification": verification,
             "field_count": len(extracted_fields)
         })
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Failed to get certificate {cert_id}: {str(e)}")
-        response = jsonify({"error": "Failed to fetch certificate"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Failed to fetch certificate"}), 500
 
-@api_bp.route("/certificates/<int:cert_id>/image", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates/<int:cert_id>/image", methods=['GET'])
 def get_certificate_image(cert_id: int):
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         cert = db_session.get(Certificate, cert_id)
         if not cert:
-            response = jsonify({"error": "Certificate not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "Certificate not found"}), 404
             
         image_path = Path(cert.image_path)
         if not image_path.exists():
-            response = jsonify({"error": "Image file not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "Image file not found"}), 404
             
-        response = send_file(image_path, as_attachment=False)
-        return add_cors(response)
+        return send_file(image_path, as_attachment=False)
         
     except Exception as e:
         logger.error(f"Failed to serve image: {str(e)}")
-        response = jsonify({"error": "Failed to serve image"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Failed to serve image"}), 500
 
 # Download endpoints
-@api_bp.route("/certificates/<int:cert_id>/download", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates/<int:cert_id>/download", methods=['GET'])
 def download_certificate_file(cert_id: int):
     """Download the original certificate file (no auth required for demo)."""
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         cert = db_session.query(Certificate).filter(Certificate.id == cert_id).first()
         if not cert:
-            response = jsonify({"error": "Certificate not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "Certificate not found"}), 404
         
         file_path = Path(cert.image_path)
         if not file_path.exists():
-            response = jsonify({"error": "File not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "File not found"}), 404
         
         filename = cert.original_filename or f"certificate_{cert_id}.png"
-        response = send_file(
+        return send_file(
             str(file_path),
             as_attachment=True,
             download_name=filename,
             mimetype='application/octet-stream'
         )
-        response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Download failed: {str(e)}")
-        response = jsonify({"error": "Download failed"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Download failed"}), 500
 
-@api_bp.route("/certificates/<int:cert_id>/export", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates/<int:cert_id>/export", methods=['GET'])
 def export_certificate_data(cert_id: int):
     """Export certificate data as JSON (no auth required for demo)."""
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         cert = db_session.query(Certificate).filter(Certificate.id == cert_id).first()
         if not cert:
-            response = jsonify({"error": "Certificate not found"})
-            response.status_code = 404
-            return add_cors(response)
+            return jsonify({"error": "Certificate not found"}), 404
         
         # Get all extracted fields
         fields = {}
@@ -552,21 +449,15 @@ def export_certificate_data(cert_id: int):
         
         response = jsonify(export_data)
         response.headers['Content-Disposition'] = f'attachment; filename=certificate_{cert_id}_data.json'
-        return add_cors(response)
+        return response
         
     except Exception as e:
         logger.error(f"Export failed: {str(e)}")
-        response = jsonify({"error": "Export failed"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Export failed"}), 500
 
-@api_bp.route("/certificates/my-certificates", methods=['GET', 'OPTIONS'])
+@api_bp.route("/certificates/my-certificates", methods=['GET'])
 def get_my_certificates():
     """Get certificates for the current user"""
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         limit = min(int(request.args.get('limit', 20)), 100)
         offset = int(request.args.get('offset', 0))
@@ -587,27 +478,20 @@ def get_my_certificates():
                 "summary": summary[:200] + "..." if len(summary) > 200 else summary
             })
         
-        response = jsonify({"certificates": result, "count": len(result), "limit": limit, "offset": offset})
-        return add_cors(response)
+        return jsonify({"certificates": result, "count": len(result), "limit": limit, "offset": offset})
         
     except Exception as e:
         logger.error(f"Failed to get user certificates: {str(e)}")
-        response = jsonify({"error": "Failed to fetch certificates"})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"error": "Failed to fetch certificates"}), 500
 
-@api_bp.route("/health", methods=['GET', 'OPTIONS'])
+@api_bp.route("/health", methods=['GET'])
 def health_check():
     """Health check endpoint for deployment monitoring."""
-    if request.method == 'OPTIONS':
-        response = jsonify({})
-        return add_cors(response)
-    
     try:
         # Check if OpenAI API key is configured
         api_key_status = "configured" if settings.OPENAI_API_KEY else "missing"
         
-        response = jsonify({
+        return jsonify({
             "status": "healthy",
             "service": "University Certificate Verifier API",
             "ai_status": api_key_status,
@@ -621,10 +505,7 @@ def health_check():
                 "File downloads"
             ]
         })
-        return add_cors(response)
         
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
-        response = jsonify({"status": "unhealthy", "error": str(e)})
-        response.status_code = 500
-        return add_cors(response)
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
