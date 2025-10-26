@@ -7,7 +7,7 @@ load_dotenv()
 
 class Settings:
     def __init__(self) -> None:
-        self.DB_URL: str = os.environ.get("DB_URL", "sqlite:///./university.db")
+        self.DB_URL: str = os.environ.get("DATABASE_URL") or os.environ.get("DB_URL", "sqlite:///./university.db")
         self.OPENAI_API_KEY: str | None = os.environ.get("OPENAI_API_KEY")
         # Optional: custom base URL for OpenAI-compatible APIs (e.g., OpenRouter)
         self.OPENAI_BASE_URL: str | None = os.environ.get("OPENAI_BASE_URL")
