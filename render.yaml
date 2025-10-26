@@ -1,22 +1,4 @@
 services:
-  # PostgreSQL Database
-  - type: pserv
-    name: university-verifier-db
-    env: docker
-    plan: free
-    region: oregon
-    dockerfilePath: ./Dockerfile.db
-    envVars:
-      - key: POSTGRES_DB
-        value: university_verifier
-      - key: POSTGRES_USER
-        value: postgres
-      - key: POSTGRES_PASSWORD
-        generateValue: true
-    disk:
-      name: postgres-data
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1
 
   # Backend API Service
   - type: web
@@ -28,9 +10,7 @@ services:
     dockerContext: ./backend
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: university-verifier-db
-          property: connectionString
+       sync: false
       - key: OPENAI_API_KEY
         sync: false
       - key: CORS_ORIGIN
@@ -68,9 +48,7 @@ services:
     dockerContext: ./university-portal
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: university-verifier-db
-          property: connectionString
+       sync: false
       - key: SECRET_KEY
         generateValue: true
     healthCheckPath: /
