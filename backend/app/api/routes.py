@@ -446,6 +446,55 @@ def export_certificate_data(cert_id: int):
             "extracted_fields": fields,
             "verification": verification
         }
+
+@api_bp.route("/certificates/<int:cert_id>/reverify", methods=['POST'])
+def reverify_certificate(cert_id: int):
+    """Re-verify a certificate against the university database."""
+    try:
+        cert = db_session.query(Certificate).filter(Certificate.id == cert_id).first()
+        if not cert:
+            return jsonify({"error": "Certificate not found"}), 404
+        
+        # Get extracted fields from certificate
+        extracted_fields = {}
+        for field in cert.fields:
+            if field.field_type == 'extracted':
+                extracted_fields[field.key] = field.value
+        
+        # Re-verify with university
+        verification = verify_certificate_with_university(extracted_fields)
+        
+        # Update verification field in database
+        verification_field = db_session.query(ExtractedField).filter(
+            ExtractedField.certificate_id == cert_id,
+            ExtractedField.key == 'verification_result'
+        ).first()
+        
+        if verification_field:
+            verification_field.value = str(verification)
+            verification_field.confidence = verification.get('confidence_score', 0.0)
+        else:
+            verification_field = ExtractedField(
+                certificate_id=cert.id,
+                key='verification_result',
+                value=str(verification),
+                confidence=verification.get('confidence_score', 0.0),
+                field_type='verification'
+            )
+            db_session.add(verification_field)
+        
+        db_session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "Certificate re-verified successfully",
+            "verification": verification
+        })
+        
+    except Exception as e:
+        db_session.rollback()
+        logger.error(f"Re-verification failed: {str(e)}")
+        return jsonify({"error": f"Re-verification failed: {str(e)}"}), 500
         
         response = jsonify(export_data)
         response.headers['Content-Disposition'] = f'attachment; filename=certificate_{cert_id}_data.json'
