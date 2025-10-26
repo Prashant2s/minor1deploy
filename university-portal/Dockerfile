@@ -24,4 +24,5 @@ USER appuser
 EXPOSE 3000
 
 # Start the application
-CMD ["python", "app.py"]
+# Use PORT environment variable from Render, default to 3000
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-3000} --workers 2 --timeout 60 app:app"]

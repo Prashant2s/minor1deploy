@@ -27,4 +27,5 @@ RUN mkdir -p /app/uploads
 EXPOSE 8000
 
 # Run the application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "app.main:app"]
+# Use PORT environment variable from Render, default to 8000
+CMD gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 4 --timeout 120 app.main:app

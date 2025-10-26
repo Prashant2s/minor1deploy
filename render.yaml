@@ -8,16 +8,18 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     envVars:
-      - key: DATABASE_URL
-        value: "placeholder"
+      - key: DB_URL
+        value: "sqlite:///./university.db"
       - key: OPENAI_API_KEY
-        value: "placeholder"
+        sync: false
       - key: CORS_ORIGIN
         value: "*"
       - key: UPLOAD_DIR
         value: "/app/uploads"
       - key: MAX_FILE_SIZE
         value: "10485760"
+      - key: PORT
+        value: "8000"
     healthCheckPath: /api/v1/health
 
   # Frontend React App
@@ -43,8 +45,8 @@ services:
     dockerfilePath: ./university-portal/Dockerfile
     dockerContext: ./university-portal
     envVars:
-      - key: DATABASE_URL
-        value: "placeholder"
+      - key: PORT
+        value: "3000"
       - key: SECRET_KEY
         generateValue: true
-    healthCheckPath: /
+    healthCheckPath: /health
