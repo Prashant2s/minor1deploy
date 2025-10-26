@@ -37,6 +37,32 @@ export default function RecordDetail() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reverifying, setReverifying] = useState(false);
+
+  const handleReverify = async () => {
+    if (!confirm('Re-verify this certificate against the university database?')) {
+      return;
+    }
+    
+    setReverifying(true);
+    try {
+      const response = await api.post(`/certificates/${id}/reverify`);
+      
+      if (response.data.success) {
+        alert('Certificate re-verified successfully!');
+        // Reload the certificate data
+        const res = await api.get(`/certificates/${id}`);
+        setData(res.data);
+      } else {
+        alert('Re-verification failed: ' + (response.data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Re-verification failed:', err);
+      alert('Re-verification failed: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setReverifying(false);
+    }
+  };
 
   const handleDownloadFile = async () => {
     try {
@@ -225,6 +251,13 @@ export default function RecordDetail() {
           Certificate Details - #{data.id}
         </h2>
         <div style={{ display: "flex", gap: "12px" }}>
+          <Button 
+            variant="warning" 
+            onClick={handleReverify}
+            disabled={reverifying}
+          >
+            {reverifying ? 'Re-verifying...' : 'Re-verify Certificate'}
+          </Button>
           <Button variant="success" onClick={handleDownloadFile}>
             Download File
           </Button>
