@@ -1,0 +1,316 @@
+{
+  "certificates": [
+    {
+      "id": "JUET001",
+      "student_name": "Arjun Kumar Sharma",
+      "enrollment_number": "19BTCSE001",
+      "registration_number": "REG2019001",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science & Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2023-06-15",
+      "date_of_birth": "2001-03-15",
+      "father_name": "Rajesh Kumar Sharma",
+      "mother_name": "Sunita Sharma",
+      "cgpa": "8.75",
+      "sgpa": "8.90",
+      "semester": "8th Semester",
+      "academic_year": "2022-23",
+      "total_credits": "160",
+      "earned_credits": "160",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2023-07-01",
+      "certificate_number": "JUET/CSE/2023/001",
+      "status": "Valid",
+      "subjects": [
+        {
+          "subject_code": "CS401",
+          "subject_name": "Machine Learning",
+          "grade": "A",
+          "credits": 4
+        },
+        {
+          "subject_code": "CS402",
+          "subject_name": "Software Engineering",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "CS403",
+          "subject_name": "Database Management Systems",
+          "grade": "A",
+          "credits": 3
+        }
+      ]
+    },
+    {
+      "id": "JUET002",
+      "student_name": "Priya Singh",
+      "enrollment_number": "19BTECE002",
+      "registration_number": "REG2019002",
+      "degree": "Bachelor of Technology",
+      "branch": "Electronics & Communication Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2023-06-15",
+      "date_of_birth": "2001-08-22",
+      "father_name": "Vikram Singh",
+      "mother_name": "Kavita Singh",
+      "cgpa": "9.12",
+      "sgpa": "9.25",
+      "semester": "8th Semester",
+      "academic_year": "2022-23",
+      "total_credits": "160",
+      "earned_credits": "160",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2023-07-01",
+      "certificate_number": "JUET/ECE/2023/002",
+      "status": "Valid",
+      "subjects": [
+        {
+          "subject_code": "EC401",
+          "subject_name": "Digital Signal Processing",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "EC402",
+          "subject_name": "Wireless Communication",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "EC403",
+          "subject_name": "VLSI Design",
+          "grade": "A",
+          "credits": 3
+        }
+      ]
+    },
+    {
+      "id": "JUET003",
+      "student_name": "Rahul Patel",
+      "enrollment_number": "20BTME003",
+      "registration_number": "REG2020003",
+      "degree": "Bachelor of Technology",
+      "branch": "Mechanical Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2024-06-15",
+      "date_of_birth": "2002-01-10",
+      "father_name": "Suresh Patel",
+      "mother_name": "Meera Patel",
+      "cgpa": "7.85",
+      "sgpa": "8.10",
+      "semester": "8th Semester",
+      "academic_year": "2023-24",
+      "total_credits": "160",
+      "earned_credits": "160",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2024-07-01",
+      "certificate_number": "JUET/ME/2024/003",
+      "status": "Valid",
+      "subjects": [
+        {
+          "subject_code": "ME401",
+          "subject_name": "Thermal Engineering",
+          "grade": "B+",
+          "credits": 4
+        },
+        {
+          "subject_code": "ME402",
+          "subject_name": "Manufacturing Technology",
+          "grade": "A",
+          "credits": 4
+        },
+        {
+          "subject_code": "ME403",
+          "subject_name": "Design of Machine Elements",
+          "grade": "B+",
+          "credits": 3
+        }
+      ]
+    },
+    {
+      "id": "JUET004",
+      "student_name": "Sneha Gupta",
+      "enrollment_number": "21BTIT004",
+      "registration_number": "REG2021004",
+      "degree": "Bachelor of Technology",
+      "branch": "Information Technology",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2025-06-15",
+      "date_of_birth": "2003-05-18",
+      "father_name": "Anil Gupta",
+      "mother_name": "Pooja Gupta",
+      "cgpa": "8.95",
+      "sgpa": "9.10",
+      "semester": "6th Semester",
+      "academic_year": "2023-24",
+      "total_credits": "120",
+      "earned_credits": "120",
+      "certificate_type": "Semester Result",
+      "issue_date": "2024-01-15",
+      "certificate_number": "JUET/IT/2024/004",
+      "status": "Valid",
+      "subjects": [
+        {
+          "subject_code": "IT301",
+          "subject_name": "Web Development",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "IT302",
+          "subject_name": "Data Structures & Algorithms",
+          "grade": "A",
+          "credits": 4
+        },
+        {
+          "subject_code": "IT303",
+          "subject_name": "Computer Networks",
+          "grade": "A+",
+          "credits": 3
+        }
+      ]
+    },
+    {
+      "id": "JUET005",
+      "student_name": "Amit Verma",
+      "enrollment_number": "18BTCSE005",
+      "registration_number": "REG2018005",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science & Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2022-06-15",
+      "date_of_birth": "2000-11-25",
+      "father_name": "Ram Verma",
+      "mother_name": "Sita Verma",
+      "cgpa": "9.45",
+      "sgpa": "9.60",
+      "semester": "8th Semester",
+      "academic_year": "2021-22",
+      "total_credits": "160",
+      "earned_credits": "160",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2022-07-01",
+      "certificate_number": "JUET/CSE/2022/005",
+      "status": "Valid",
+      "subjects": [
+        {
+          "subject_code": "CS801",
+          "subject_name": "Artificial Intelligence",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "CS802",
+          "subject_name": "Cybersecurity",
+          "grade": "A+",
+          "credits": 4
+        },
+        {
+          "subject_code": "CS803",
+          "subject_name": "Cloud Computing",
+          "grade": "A",
+          "credits": 3
+        }
+      ]
+    },
+    {
+      "id": "JUET006",
+      "student_name": "Prashant singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2027006",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2027-06-15",
+      "cgpa": "N/A",
+      "academic_year": "2023-2027",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-26",
+      "certificate_number": "JUET/CSE/2027/006",
+      "status": "Valid",
+      "upload_timestamp": "2025-10-26T13:14:51.844857Z"
+    },
+    {
+      "id": "JUET007",
+      "student_name": "Prashant singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2027007",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2027-06-15",
+      "cgpa": "N/A",
+      "academic_year": "2023-2027",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-26",
+      "certificate_number": "JUET/CSE/2027/007",
+      "status": "Valid",
+      "upload_timestamp": "2025-10-26T13:31:07.238515Z",
+      "certificate_file": "231B225_JUET007.pdf"
+    },
+    {
+      "id": "JUET008",
+      "student_name": "Prashant singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2027008",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2027-06-15",
+      "cgpa": "N/A",
+      "academic_year": "2023-2027",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-26",
+      "certificate_number": "JUET/CSE/2027/008",
+      "status": "Valid",
+      "upload_timestamp": "2025-10-26T13:31:17.403692Z",
+      "certificate_file": "231B225_JUET008.pdf"
+    },
+    {
+      "id": "JUET009",
+      "student_name": "Prashant singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2027009",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2027-06-15",
+      "cgpa": "N/A",
+      "academic_year": "2023-2027",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-26",
+      "certificate_number": "JUET/CSE/2027/009",
+      "status": "Valid",
+      "upload_timestamp": "2025-10-26T13:31:28.077332Z",
+      "certificate_file": "231B225_JUET009.pdf"
+    },
+    {
+      "id": "JUET010",
+      "student_name": "Prashant singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2027010",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2027-06-15",
+      "cgpa": "N/A",
+      "academic_year": "2023-2027",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-26",
+      "certificate_number": "JUET/CSE/2027/010",
+      "status": "Valid",
+      "upload_timestamp": "2025-10-26T13:31:38.276678Z",
+      "certificate_file": "231B225_JUET010.pdf"
+    }
+  ],
+  "metadata": {
+    "total_certificates": 10,
+    "last_updated": "2025-10-26T13:31:38.276678Z",
+    "university_code": "JUET",
+    "university_name": "Jaypee University of Engineering & Technology",
+    "location": "Guna, Madhya Pradesh",
+    "website": "https://juet.ac.in"
+  }
+}

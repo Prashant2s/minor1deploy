@@ -1,0 +1,29 @@
+{
+  "confidence_score": 0.0,
+  "file_type": "image",
+  "id": 1,
+  "summary": "Prashant Singh - B.Tech CSE from Jaypee University of Engineering & Technology-Guna (CGPA: N/A)",
+  "tabular_data": {
+    "academic_year": "2023-24",
+    "branch": "Computer Science & Engineering",
+    "certificate_type": "Semester Result",
+    "cgpa": null,
+    "date_of_birth": "15/03/2005",
+    "degree": "B.Tech",
+    "earned_credits": "20",
+    "enrollment_number": "231B225",
+    "grade": null,
+    "graduation_date": "15/06/2027",
+    "semester": "1",
+    "sgpa": null,
+    "student_name": "Prashant Singh",
+    "subjects": null,
+    "total_credits": "20",
+    "university_name": "Jaypee University of Engineering & Technology-Guna"
+  },
+  "verification": {
+    "confidence_score": 0.0,
+    "matched_student": null,
+    "student_verified": false
+  }
+}

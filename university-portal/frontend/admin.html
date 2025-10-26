@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Portal - Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: #2E5BBA;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2E5BBA;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2E5BBA;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #2E5BBA;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #1e3f8a;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .logout-btn {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .logout-btn:hover {
+            background: #545b62;
+        }
+
+        .file-upload {
+            border: 2px dashed #2E5BBA;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .file-upload:hover {
+            background: #e9ecef;
+            border-color: #1e3f8a;
+        }
+
+        .file-upload.dragover {
+            background: #e3f2fd;
+            border-color: #2E5BBA;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        #loginSection, #uploadSection {
+            display: none;
+        }
+
+        #loginSection.active, #uploadSection.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="active">
+            <div class="card">
+                <div class="logo">
+                    <div class="logo-icon">🎓</div>
+                    <h1>University Portal</h1>
+                    <p class="subtitle">Admin Login - Original Certificates Database</p>
+                </div>
+                
+                <div id="loginError" class="error"></div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" required placeholder="Enter admin username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password: <span style="color: #999; font-weight: normal; font-size: 12px;">(optional)</span></label>
+                        <input type="password" id="password" placeholder="Enter password (optional)">
+                    </div>
+                    
+                    <button type="submit" class="btn">Login</button>
+                </form>
+                
+                <p style="margin-top: 20px; text-align: center; color: #999; font-size: 13px;">
+                    Enter any alphanumeric username<br>
+                    <span style="font-size: 11px;">Examples: ADMIN, Admin123, user1<br>(Password not required)</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection">
+            <div class="card">
+                <div class="logo">
+                    <div class="logo-icon">📤</div>
+                    <h1>Upload Certificate</h1>
+                    <p class="subtitle">Add original certificates to database</p>
+                </div>
+                
+                <div id="uploadError" class="error"></div>
+                <div id="uploadSuccess" class="success"></div>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Certificate File: <span style="color: red;">*</span></label>
+                        <div class="file-upload" id="fileUpload">
+                            <span style="font-size: 40px;">📄</span>
+                            <p>Click or drag certificate file here</p>
+                            <p style="font-size: 12px; color: #999;">Supported: PDF, JPG, PNG (Max 10MB)</p>
+                        </div>
+                        <input type="file" id="certificateFile" accept=".pdf,.jpg,.jpeg,.png" style="display: none;" required>
+                        <div id="fileInfo" class="file-info"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentName">Student Name:</label>
+                        <input type="text" id="studentName" required placeholder="Full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="enrollmentNumber">Enrollment Number:</label>
+                        <input type="text" id="enrollmentNumber" required placeholder="e.g., 231B225">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="branch">Branch:</label>
+                        <select id="branch" required>
+                            <option value="">Select Branch</option>
+                            <option value="Computer Science Engineering">Computer Science Engineering</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Electronics & Communication">Electronics & Communication</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Electrical Engineering">Electrical Engineering</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="academicYear">Academic Year:</label>
+                        <input type="text" id="academicYear" required placeholder="e.g., 2019-2023">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="status" required>
+                            <option value="">Select Status</option>
+                            <option value="Valid">Valid</option>
+                            <option value="Graduated">Graduated</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn">Upload Certificate</button>
+                    <button type="button" class="btn logout-btn" onclick="logout()">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        // Simple admin credentials (for demo - use real auth in production)
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'admin123'
+        };
+        
+        // Check if already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            showUploadSection();
+        }
+        
+        // Login form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            
+            // Simple login - accept any alphanumeric username
+            if (!username) {
+                showError('loginError', 'Please enter a username');
+                return;
+            }
+            
+            // Check if alphanumeric only
+            const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+            if (!alphanumericRegex.test(username)) {
+                showError('loginError', 'Username must be alphanumeric only');
+                return;
+            }
+            
+            // Accept any valid alphanumeric username
+            sessionStorage.setItem('adminLoggedIn', 'true');
+            sessionStorage.setItem('adminUsername', username);
+            showUploadSection();
+        });
+        
+        // File upload handling
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('certificateFile');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        fileUpload.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                fileInfo.textContent = `✓ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            }
+        });
+        
+        // Drag and drop
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+        
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+        
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                const file = e.dataTransfer.files[0];
+                fileInfo.textContent = `✓ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            }
+        });
+        
+        // Upload form
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('student_name', document.getElementById('studentName').value);
+            formData.append('enrollment_number', document.getElementById('enrollmentNumber').value);
+            formData.append('branch', document.getElementById('branch').value);
+            formData.append('academic_year', document.getElementById('academicYear').value);
+            formData.append('status', document.getElementById('status').value);
+            
+            try {
+                const response = await fetch(`${API_BASE}/certificates/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showSuccess('uploadSuccess', 'Certificate uploaded successfully!');
+                    document.getElementById('uploadForm').reset();
+                    fileInfo.textContent = '';
+                } else {
+                    showError('uploadError', result.error || 'Failed to upload certificate');
+                }
+            } catch (error) {
+                showError('uploadError', 'Error connecting to server');
+            }
+        });
+        
+        function showUploadSection() {
+            document.getElementById('loginSection').classList.remove('active');
+            document.getElementById('uploadSection').classList.add('active');
+        }
+        
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('uploadSection').classList.remove('active');
+            document.getElementById('loginSection').classList.add('active');
+            document.getElementById('uploadForm').reset();
+            hideMessages();
+        }
+        
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showSuccess(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 5000);
+        }
+        
+        function hideMessages() {
+            document.querySelectorAll('.error, .success').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>

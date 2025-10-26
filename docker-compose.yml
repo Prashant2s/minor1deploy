@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: university
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    environment:
+      DB_URL: postgresql+psycopg2://app:${POSTGRES_PASSWORD}@db:5432/university
+      UPLOAD_DIR: /data/uploads
+      CORS_ORIGIN: http://localhost:5173
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+      UNIVERSITY_PORTAL_URL: http://university-portal:3000
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      - db
+      - university-portal
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    environment:
+      VITE_API_URL: http://localhost:5000/api/v1
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+  university-portal:
+    build:
+      context: ./university-portal
+      dockerfile: Dockerfile
+    environment:
+      FLASK_ENV: production
+    volumes:
+      - ./university-portal/database:/app/../database
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  uploads:
