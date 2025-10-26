@@ -446,6 +446,14 @@ def export_certificate_data(cert_id: int):
             "extracted_fields": fields,
             "verification": verification
         }
+        
+        response = jsonify(export_data)
+        response.headers['Content-Disposition'] = f'attachment; filename=certificate_{cert_id}_data.json'
+        return response
+        
+    except Exception as e:
+        logger.error(f"Export failed: {str(e)}")
+        return jsonify({"error": "Export failed"}), 500
 
 @api_bp.route("/certificates/<int:cert_id>/reverify", methods=['POST'])
 def reverify_certificate(cert_id: int):
@@ -495,14 +503,6 @@ def reverify_certificate(cert_id: int):
         db_session.rollback()
         logger.error(f"Re-verification failed: {str(e)}")
         return jsonify({"error": f"Re-verification failed: {str(e)}"}), 500
-        
-        response = jsonify(export_data)
-        response.headers['Content-Disposition'] = f'attachment; filename=certificate_{cert_id}_data.json'
-        return response
-        
-    except Exception as e:
-        logger.error(f"Export failed: {str(e)}")
-        return jsonify({"error": "Export failed"}), 500
 
 @api_bp.route("/certificates/my-certificates", methods=['GET'])
 def get_my_certificates():
