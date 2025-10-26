@@ -24,8 +24,9 @@ services:
   - type: web
     name: university-verifier-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/dist
+    buildCommand: npm install && npm run build
+    rootDirectory: ./frontend
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: "https://university-verifier-backend.onrender.com/api/v1"

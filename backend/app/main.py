@@ -31,6 +31,20 @@ def create_app() -> Flask:
     @app.teardown_appcontext
     def remove_session(exception=None):
         db_session.remove()
+    
+    # Root endpoint
+    @app.route("/")
+    def root():
+        return {
+            "message": "University Certificate Verifier API",
+            "version": "1.0.0",
+            "status": "running",
+            "endpoints": {
+                "health": "/api/v1/health",
+                "auth": "/api/v1/auth/*",
+                "certificates": "/api/v1/certificates/*"
+            }
+        }
 
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
