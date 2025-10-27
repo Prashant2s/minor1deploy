@@ -13,21 +13,51 @@ CORS(app)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Configure upload folder
-UPLOAD_FOLDER = '../database/certificates'
+# Configure upload folder - use /tmp for ephemeral storage in production
+UPLOAD_FOLDER = os.environ.get('UPLOAD_DIR', '/tmp/certificates')
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg'}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+# Create upload folder if it doesn't exist and we have permissions
+try:
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    logger.info(f"Upload folder configured: {UPLOAD_FOLDER}")
+except Exception as e:
+    logger.warning(f"Could not create upload folder: {e}. File uploads will be disabled.")
+    UPLOAD_FOLDER = None
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# Certificate database path - use environment variable or fallback
+DB_FILE = os.environ.get('DB_FILE', '/tmp/certificates.json')
+
+# Initialize database file if it doesn't exist
+if not os.path.exists(DB_FILE):
+    try:
+        # Create with sample data
+        initial_data = {
+            "certificates": [],
+            "metadata": {
+                "total_certificates": 0,
+                "last_updated": datetime.utcnow().isoformat() + 'Z',
+                "university_code": "JUET",
+                "university_name": "Jaypee University of Engineering & Technology",
+                "location": "Guna, Madhya Pradesh",
+                "website": "https://juet.ac.in"
+            }
+        }
+        with open(DB_FILE, 'w') as f:
+            json.dump(initial_data, f, indent=2)
+        logger.info(f"Database initialized: {DB_FILE}")
+    except Exception as e:
+        logger.error(f"Could not initialize database: {e}")
+
 # Load certificate database
 def load_certificates():
     try:
-        with open('../database/certificates.json', 'r') as f:
+        with open(DB_FILE, 'r') as f:
             return json.load(f)
     except Exception as e:
         logger.error(f"Error loading certificates: {e}")
@@ -36,7 +66,7 @@ def load_certificates():
 # Save certificate database
 def save_certificates(data):
     try:
-        with open('../database/certificates.json', 'w') as f:
+        with open(DB_FILE, 'w') as f:
             json.dump(data, f, indent=2)
         return True
     except Exception as e:
@@ -209,12 +239,19 @@ def upload_certificate():
         
         cert_number = f"JUET/{branch_abbrev}/{year}/{cert_id[4:]}"
         
-        # Save the certificate file
-        filename = secure_filename(file.filename)
-        file_extension = filename.rsplit('.', 1)[1].lower()
-        saved_filename = f"{enrollment}_{cert_id}.{file_extension}"
-        file_path = os.path.join(UPLOAD_FOLDER, saved_filename)
-        file.save(file_path)
+        # Save the certificate file (if upload folder is available)
+        saved_filename = None
+        if UPLOAD_FOLDER:
+            try:
+                filename = secure_filename(file.filename)
+                file_extension = filename.rsplit('.', 1)[1].lower()
+                saved_filename = f"{enrollment}_{cert_id}.{file_extension}"
+                file_path = os.path.join(UPLOAD_FOLDER, saved_filename)
+                file.save(file_path)
+                logger.info(f"File saved: {saved_filename}")
+            except Exception as e:
+                logger.warning(f"Could not save file: {e}. Continuing without file storage.")
+                saved_filename = None
         
         new_certificate = {
             "id": cert_id,
