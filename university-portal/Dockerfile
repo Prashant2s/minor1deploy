@@ -13,16 +13,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY backend/ .
-COPY database/ ../database/
-COPY frontend/ ../frontend/
+COPY database/ /database/
+COPY frontend/ /frontend/
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+# Create directories for runtime data
+RUN mkdir -p /tmp/certificates && chmod 777 /tmp/certificates
 
 # Expose port
 EXPOSE 10000
 
 # Start the application
 # Use PORT environment variable from Render
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 60 app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 2 --timeout 60 --access-logfile - --error-logfile - app:app"]
