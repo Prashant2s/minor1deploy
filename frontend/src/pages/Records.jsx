@@ -27,26 +27,6 @@ export default function Records() {
     }
   };
 
-  const handleExportData = async (certId) => {
-    try {
-      const response = await api.get(`/certificates/${certId}/export`);
-
-      const dataStr = JSON.stringify(response.data, null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-      const url = window.URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `certificate_${certId}_data.json`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
-      alert("Export failed. Please try again.");
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -167,34 +147,12 @@ export default function Records() {
                       {new Date(record.created_at).toLocaleDateString()} {new Date(record.created_at).toLocaleTimeString()}
                     </td>
                     <td style={{ border: "1px solid #3a3a3a", padding: "10px", textAlign: "center" }}>
-                      <div style={{ display: "flex", gap: "6px", justifyContent: "center", flexWrap: "wrap" }}>
-                        <Link
-                          to={`/records/${record.id}`}
-                          style={{
-                            backgroundColor: "#2962ff",
-                            color: "white",
-                            padding: "4px 8px",
-                            textDecoration: "none",
-                            borderRadius: 4,
-                            fontSize: "11px",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          View
-                        </Link>
-                        <button
-                          onClick={() => handleDownloadFile(record.id, record.original_filename)}
-                          style={{ backgroundColor: "#28a745", color: "white", padding: "4px 8px", border: "none", borderRadius: 4, fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
-                        >
-                          Download
-                        </button>
-                        <button
-                          onClick={() => handleExportData(record.id)}
-                          style={{ backgroundColor: "#17a2b8", color: "white", padding: "4px 8px", border: "none", borderRadius: 4, fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
-                        >
-                          Export
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => handleDownloadFile(record.id, record.original_filename)}
+                        style={{ backgroundColor: "#28a745", color: "white", padding: "6px 12px", border: "none", borderRadius: 4, fontSize: "12px", fontWeight: "bold", cursor: "pointer" }}
+                      >
+                        Download
+                      </button>
                     </td>
                   </tr>
                 );
