@@ -32,7 +32,7 @@ services:
     staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: "https://university-verifier-backend.onrender.com/api/v1"
+        value: "https://university-verifier-backend-xfew.onrender.com/api/v1"
     routes:
       - type: rewrite
         source: /*
