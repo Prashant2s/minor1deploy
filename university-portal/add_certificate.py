@@ -8,7 +8,9 @@ import os
 from datetime import datetime
 
 # Database file path
-DB_FILE = '../database/certificates.json'
+import os
+script_dir = os.path.dirname(os.path.abspath(__file__))
+DB_FILE = os.path.join(script_dir, 'database', 'certificates.json')
 
 def load_certificates():
     """Load certificates from database"""

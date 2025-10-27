@@ -1,8 +1,26 @@
 {
-  "certificates": [],
+  "certificates": [
+    {
+      "id": "JUET001",
+      "student_name": "Prashant Singh",
+      "enrollment_number": "231B225",
+      "registration_number": "REG2023001",
+      "degree": "Bachelor of Technology",
+      "branch": "Computer Science Engineering",
+      "university": "Jaypee University of Engineering & Technology",
+      "graduation_date": "2023-06-15",
+      "cgpa": "6.1",
+      "academic_year": "2019-2023",
+      "certificate_type": "Degree Certificate",
+      "issue_date": "2025-10-27",
+      "certificate_number": "JUET/CSE/2023/001",
+      "status": "Active",
+      "upload_timestamp": "2025-10-27T09:14:09.664913Z"
+    }
+  ],
   "metadata": {
-    "total_certificates": 0,
-    "last_updated": "2025-10-27T07:57:30Z",
+    "total_certificates": 1,
+    "last_updated": "2025-10-27T09:14:09.664913Z",
     "university_code": "JUET",
     "university_name": "Jaypee University of Engineering & Technology",
     "location": "Guna, Madhya Pradesh",
