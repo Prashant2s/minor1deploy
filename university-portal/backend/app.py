@@ -163,7 +163,7 @@ def health():
         "status": "healthy",
         "service": "JUET University Portal",
         "timestamp": datetime.utcnow().isoformat(),
-        "port": 3000
+        "port": int(os.environ.get('PORT', 3000))
     })
 
 @app.route('/api/certificates', methods=['GET'])
