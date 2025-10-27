@@ -13,7 +13,7 @@ services:
       - key: OPENAI_API_KEY
         sync: false
       - key: UNIVERSITY_PORTAL_URL
-        value: "https://university-verifier-portal-xfew.onrender.com"
+        sync: false
       - key: CORS_ORIGIN
         value: "*"
       - key: UPLOAD_DIR
@@ -21,7 +21,9 @@ services:
       - key: MAX_FILE_SIZE
         value: "10485760"
       - key: PORT
-        value: "8000"
+        value: "10000"
+      - key: HOST
+        value: "0.0.0.0"
     healthCheckPath: /api/v1/health
 
   # Frontend React App
@@ -32,7 +34,7 @@ services:
     staticPublishPath: ./frontend/dist
     envVars:
       - key: VITE_API_URL
-        value: "https://university-verifier-backend-xfew.onrender.com/api/v1"
+        sync: false
     routes:
       - type: rewrite
         source: /*
@@ -48,7 +50,13 @@ services:
     dockerContext: ./university-portal
     envVars:
       - key: PORT
-        value: "3000"
+        value: "10000"
+      - key: HOST
+        value: "0.0.0.0"
       - key: SECRET_KEY
         generateValue: true
+      - key: UPLOAD_DIR
+        value: "/tmp/certificates"
+      - key: DB_FILE
+        value: "/tmp/certificates.json"
     healthCheckPath: /health

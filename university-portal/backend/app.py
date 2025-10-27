@@ -660,9 +660,12 @@ def search_certificates():
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
-    print("🎓 Starting JUET University Portal...")
-    print("🌐 Server will run on http://localhost:3000")
-    print("📊 Database contains 5 sample certificates")
-    print("🔗 Integration with Certificate Verifier (port 5173)")
+    port = int(os.environ.get('PORT', 3000))
+    host = os.environ.get('HOST', '0.0.0.0')
     
-    app.run(host='0.0.0.0', port=3000, debug=True)
+    print("🎓 Starting JUET University Portal...")
+    print(f"🌐 Server will run on {host}:{port}")
+    print("📊 Database contains certificate records")
+    print("🔗 Integration with Certificate Verifier")
+    
+    app.run(host=host, port=port, debug=False)
