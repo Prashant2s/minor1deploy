@@ -32,25 +32,36 @@ def allowed_file(filename):
 
 # Certificate database path - use environment variable or fallback
 DB_FILE = os.environ.get('DB_FILE', '/tmp/certificates.json')
+SOURCE_DB_FILE = '../database/certificates.json'
 
 # Initialize database file if it doesn't exist
 if not os.path.exists(DB_FILE):
     try:
-        # Create with sample data
-        initial_data = {
-            "certificates": [],
-            "metadata": {
-                "total_certificates": 0,
-                "last_updated": datetime.utcnow().isoformat() + 'Z',
-                "university_code": "JUET",
-                "university_name": "Jaypee University of Engineering & Technology",
-                "location": "Guna, Madhya Pradesh",
-                "website": "https://juet.ac.in"
+        # Try to load from source database first
+        if os.path.exists(SOURCE_DB_FILE):
+            logger.info(f"Loading initial data from {SOURCE_DB_FILE}")
+            with open(SOURCE_DB_FILE, 'r') as source:
+                initial_data = json.load(source)
+            with open(DB_FILE, 'w') as f:
+                json.dump(initial_data, f, indent=2)
+            logger.info(f"Database initialized from source: {DB_FILE} with {len(initial_data.get('certificates', []))} certificates")
+        else:
+            # Create with empty data
+            logger.info("Source database not found, creating empty database")
+            initial_data = {
+                "certificates": [],
+                "metadata": {
+                    "total_certificates": 0,
+                    "last_updated": datetime.utcnow().isoformat() + 'Z',
+                    "university_code": "JUET",
+                    "university_name": "Jaypee University of Engineering & Technology",
+                    "location": "Guna, Madhya Pradesh",
+                    "website": "https://juet.ac.in"
+                }
             }
-        }
-        with open(DB_FILE, 'w') as f:
-            json.dump(initial_data, f, indent=2)
-        logger.info(f"Database initialized: {DB_FILE}")
+            with open(DB_FILE, 'w') as f:
+                json.dump(initial_data, f, indent=2)
+            logger.info(f"Database initialized: {DB_FILE}")
     except Exception as e:
         logger.error(f"Could not initialize database: {e}")
 
