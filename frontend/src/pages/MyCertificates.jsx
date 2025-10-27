@@ -41,26 +41,6 @@ export default function MyCertificates() {
     }
   };
 
-  const handleExportData = async (certId) => {
-    try {
-      const response = await api.get(`/certificates/${certId}/export`);
-
-      const dataStr = JSON.stringify(response.data, null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-      const url = window.URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `certificate_${certId}_data.json`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
-      alert("Export failed. Please try again.");
-    }
-  };
 
   if (loading) return <p style={{ padding: 16 }}>Loading...</p>;
   if (error) return <p style={{ padding: 16, color: "red" }}>{error}</p>;
@@ -328,13 +308,6 @@ export default function MyCertificates() {
                         style={{ padding: "4px 8px", fontSize: "11px" }}
                       >
                         Download
-                      </Button>
-                      <Button
-                        variant="info"
-                        onClick={() => handleExportData(record.id)}
-                        style={{ padding: "4px 8px", fontSize: "11px" }}
-                      >
-                        Export
                       </Button>
                     </div>
                   </td>

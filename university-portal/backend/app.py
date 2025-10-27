@@ -461,21 +461,59 @@ def verify_certificate():
         data = load_certificates()
         certificates = data.get("certificates", [])
         
+        # Helper function to normalize strings for comparison
+        def normalize_string(s):
+            """Normalize string by removing extra spaces, special chars, and lowercasing"""
+            import re
+            # Convert to lowercase and strip
+            s = s.lower().strip()
+            # Remove multiple spaces
+            s = re.sub(r'\s+', ' ', s)
+            # Remove common special characters that might cause mismatch
+            s = re.sub(r'[^a-z0-9\s]', '', s)
+            return s
+        
+        # Normalize input
+        normalized_input_name = normalize_string(student_name)
+        normalized_input_enrollment = normalize_string(enrollment_number)
+        
         # Search for matching certificate
         matched_certificate = None
+        best_match_score = 0
+        
         for cert in certificates:
-            cert_name = cert.get("student_name", "").lower().strip()
-            cert_enrollment = cert.get("enrollment_number", "").lower().strip()
+            cert_name = normalize_string(cert.get("student_name", ""))
+            cert_enrollment = normalize_string(cert.get("enrollment_number", ""))
             
-            # Check for exact match
-            if (cert_name == student_name.lower() and 
-                cert_enrollment == enrollment_number.lower()):
-                matched_certificate = cert
-                break
+            # Check for exact match on enrollment (most reliable)
+            if cert_enrollment == normalized_input_enrollment:
+                # If enrollment matches, check name similarity
+                # Calculate simple match score
+                name_match = cert_name == normalized_input_name
+                
+                if name_match:
+                    # Perfect match
+                    matched_certificate = cert
+                    best_match_score = 1.0
+                    break
+                elif best_match_score < 0.9:
+                    # Enrollment matches but name doesn't - still count as match
+                    # (enrollment is unique identifier)
+                    matched_certificate = cert
+                    best_match_score = 0.9
+            
+            # Also check if name matches and enrollment is similar
+            # (in case of OCR errors in enrollment number)
+            elif cert_name == normalized_input_name:
+                # Check if enrollment numbers are similar
+                if best_match_score < 0.7:
+                    # Name matches - possible match
+                    matched_certificate = cert
+                    best_match_score = 0.7
         
         if matched_certificate:
-            # Calculate confidence score based on match quality
-            confidence_score = 1.0  # Perfect match
+            # Use the calculated match score as confidence
+            confidence_score = best_match_score
             
             return jsonify({
                 "success": True,

@@ -147,12 +147,28 @@ export default function Records() {
                       {new Date(record.created_at).toLocaleDateString()} {new Date(record.created_at).toLocaleTimeString()}
                     </td>
                     <td style={{ border: "1px solid #3a3a3a", padding: "10px", textAlign: "center" }}>
-                      <button
-                        onClick={() => handleDownloadFile(record.id, record.original_filename)}
-                        style={{ backgroundColor: "#28a745", color: "white", padding: "6px 12px", border: "none", borderRadius: 4, fontSize: "12px", fontWeight: "bold", cursor: "pointer" }}
-                      >
-                        Download
-                      </button>
+                      <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+                        <Link
+                          to={`/records/${record.id}`}
+                          style={{
+                            backgroundColor: "#2962ff",
+                            color: "white",
+                            padding: "4px 8px",
+                            textDecoration: "none",
+                            borderRadius: 4,
+                            fontSize: "11px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          View
+                        </Link>
+                        <button
+                          onClick={() => handleDownloadFile(record.id, record.original_filename)}
+                          style={{ backgroundColor: "#28a745", color: "white", padding: "4px 8px", border: "none", borderRadius: 4, fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}
+                        >
+                          Download
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
