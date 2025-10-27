@@ -87,26 +87,6 @@ export default function RecordDetail() {
     }
   };
 
-  const handleExportData = async () => {
-    try {
-      const response = await api.get(`/certificates/${id}/export`);
-
-      const dataStr = JSON.stringify(response.data, null, 2);
-      const dataBlob = new Blob([dataStr], { type: "application/json" });
-
-      const url = window.URL.createObjectURL(dataBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `certificate_${id}_data.json`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Export failed:", err);
-      alert("Export failed. Please try again.");
-    }
-  };
 
   useEffect(() => {
     (async () => {
@@ -260,9 +240,6 @@ export default function RecordDetail() {
           </Button>
           <Button variant="success" onClick={handleDownloadFile}>
             Download File
-          </Button>
-          <Button variant="info" onClick={handleExportData}>
-            Export Data
           </Button>
         </div>
       </div>
