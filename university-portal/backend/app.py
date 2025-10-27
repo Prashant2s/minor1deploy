@@ -477,13 +477,19 @@ def verify_certificate():
         normalized_input_name = normalize_string(student_name)
         normalized_input_enrollment = normalize_string(enrollment_number)
         
+        logger.info(f"Verification request - Name: '{student_name}' (normalized: '{normalized_input_name}'), Enrollment: '{enrollment_number}' (normalized: '{normalized_input_enrollment}')")
+        
         # Search for matching certificate
         matched_certificate = None
         best_match_score = 0
         
+        logger.info(f"Searching {len(certificates)} certificates in database")
+        
         for cert in certificates:
             cert_name = normalize_string(cert.get("student_name", ""))
             cert_enrollment = normalize_string(cert.get("enrollment_number", ""))
+            
+            logger.debug(f"Comparing with DB cert - Name: '{cert.get('student_name', '')}' (normalized: '{cert_name}'), Enrollment: '{cert.get('enrollment_number', '')}' (normalized: '{cert_enrollment}')")
             
             # Check for exact match on enrollment (most reliable)
             if cert_enrollment == normalized_input_enrollment:
