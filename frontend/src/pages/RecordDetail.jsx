@@ -231,13 +231,6 @@ export default function RecordDetail() {
           Certificate Details - #{data.id}
         </h2>
         <div style={{ display: "flex", gap: "12px" }}>
-          <Button 
-            variant="warning" 
-            onClick={handleReverify}
-            disabled={reverifying}
-          >
-            {reverifying ? 'Re-verifying...' : 'Re-verify Certificate'}
-          </Button>
           <Button variant="success" onClick={handleDownloadFile}>
             Download File
           </Button>
