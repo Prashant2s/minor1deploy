@@ -270,7 +270,10 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        // Use current domain for API or fallback to localhost for development
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api'
+            : `${window.location.protocol}//${window.location.host}/api`;
         
         // Simple admin credentials (for demo - use real auth in production)
         const ADMIN_CREDENTIALS = {
