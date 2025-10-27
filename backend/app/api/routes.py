@@ -533,6 +533,34 @@ def get_my_certificates():
         logger.error(f"Failed to get user certificates: {str(e)}")
         return jsonify({"error": "Failed to fetch certificates"}), 500
 
+@api_bp.route("/admin/delete-all-certificates", methods=['DELETE'])
+def delete_all_certificates():
+    """Delete all certificate records (admin endpoint - no auth for demo)."""
+    try:
+        # Count before deletion
+        cert_count = db_session.query(Certificate).count()
+        field_count = db_session.query(ExtractedField).count()
+        
+        if cert_count == 0:
+            return jsonify({"message": "No certificates to delete", "deleted": 0})
+        
+        # Delete all certificates (cascade will delete extracted fields)
+        db_session.query(Certificate).delete()
+        db_session.commit()
+        
+        logger.info(f"Deleted {cert_count} certificates and {field_count} extracted fields")
+        
+        return jsonify({
+            "message": "All certificates deleted successfully",
+            "deleted_certificates": cert_count,
+            "deleted_fields": field_count
+        })
+        
+    except Exception as e:
+        db_session.rollback()
+        logger.error(f"Failed to delete certificates: {str(e)}")
+        return jsonify({"error": f"Failed to delete certificates: {str(e)}"}), 500
+
 @api_bp.route("/health", methods=['GET'])
 def health_check():
     """Health check endpoint for deployment monitoring."""
