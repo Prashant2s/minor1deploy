@@ -14,6 +14,7 @@ After deploying, you **MUST** manually set these environment variables in the Re
 - **OPENAI_API_KEY**: Your OpenAI API key (required for AI features)
 - **UNIVERSITY_PORTAL_URL**: URL of your portal service (e.g., `https://university-verifier-portal.onrender.com`)
 - **CORS_ORIGIN**: `*` (or specific frontend URL for security)
+- **Note**: DATABASE_URL and DB_URL are automatically set from the PostgreSQL database
 
 #### Frontend Service (`university-verifier-frontend`)
 - **VITE_API_URL**: Your backend URL with `/api/v1` path
@@ -120,7 +121,8 @@ After deployment, test the following:
 
 - **Free Tier**: Services on free tier spin down after 15 minutes of inactivity
 - **Cold Starts**: First request after spin-down may take 30-60 seconds
-- **Database**: Using SQLite with ephemeral storage - data persists during runtime but may be lost on redeploy
+- **Database**: Using PostgreSQL with persistent storage - data is preserved across redeploys
+- **Database Limits (Free)**: 1GB storage, 5 concurrent connections, 7-day backups
 - **File Uploads**: Stored in `/tmp` - files are ephemeral on free tier
 
 ## 🔐 Security Recommendations
