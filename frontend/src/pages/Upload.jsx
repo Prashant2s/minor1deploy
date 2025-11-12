@@ -149,41 +149,43 @@ export default function Upload() {
               >
                 🎯 University Verification Status
               </div>
-              <div
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: "6px",
-                  backgroundColor: result.verification.student_verified
-                    ? "#d4edda"
-                    : "#f8d7da",
-                  border: `1px solid ${
-                    result.verification.student_verified ? "#c3e6cb" : "#f5c6cb"
-                  }`,
-                  color: result.verification.student_verified
-                    ? "#155724"
-                    : "#721c24",
-                }}
-              >
-                <div style={{ fontWeight: "600", fontSize: "16px" }}>
-                  {result.verification.student_verified
-                    ? "✅ Certificate VERIFIED"
-                    : "❌ Certificate NOT FOUND in University Database"}
-                </div>
-                <div style={{ fontSize: "14px", marginTop: "4px" }}>
-                  Confidence Score:{" "}
-                  {Math.round(
-                    (result.verification.confidence_score || 0) * 100
-                  )}
-                  %
-                </div>
-                {result.verification.matched_student && (
-                  <div style={{ fontSize: "14px", marginTop: "8px" }}>
-                    <strong>Matched University Record:</strong>{" "}
-                    {result.verification.matched_student.name} (Reg:{" "}
-                    {result.verification.matched_student.reg_no})
+              {(() => {
+                const status = (result.simple_status || '').toLowerCase();
+                const colors = status === 'verified'
+                  ? { bg: '#d4edda', border: '#c3e6cb', text: '#155724', label: '✅ VERIFIED' }
+                  : status === 'mismatch'
+                  ? { bg: '#fff3cd', border: '#ffeeba', text: '#856404', label: '⚠️ MISMATCH' }
+                  : { bg: '#f8d7da', border: '#f5c6cb', text: '#721c24', label: '❌ NOT VERIFIED' };
+                return (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      borderRadius: "6px",
+                      backgroundColor: colors.bg,
+                      border: `1px solid ${colors.border}`,
+                      color: colors.text,
+                    }}
+                  >
+                    <div style={{ fontWeight: "600", fontSize: "16px" }}>
+                      Status: {colors.label}
+                    </div>
+                    <div style={{ fontSize: "14px", marginTop: "4px" }}>
+                      Confidence Score:{" "}
+                      {Math.round(
+                        (result.verification.confidence_score || 0) * 100
+                      )}
+                      %
+                    </div>
+                    {result.verification.matched_student && (
+                      <div style={{ fontSize: "14px", marginTop: "8px" }}>
+                        <strong>Matched University Record:</strong>{" "}
+                        {(result.verification.matched_student.name || result.verification.matched_student.student_name) || '-'} (Enroll:{" "}
+                        {(result.verification.matched_student.reg_no || result.verification.matched_student.enrollment_number) || '-'})
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                );
+              })()}
             </div>
           )}
 

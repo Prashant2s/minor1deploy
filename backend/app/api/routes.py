@@ -14,6 +14,72 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 api_bp = Blueprint("api", __name__)
 
+
+def _normalize_text(s: str) -> str:
+    try:
+        import re
+        s = (s or "").lower().strip()
+        s = re.sub(r"\s+", " ", s)
+        s = re.sub(r"[^a-z0-9\s]", "", s)
+        return s
+    except Exception:
+        return (s or "").strip().lower()
+
+def _parse_float(val):
+    try:
+        if val is None:
+            return None
+        s = str(val).strip()
+        if s == "" or s.lower() in {"na", "n/a", "null", "none", "-"}:
+            return None
+        return float(s)
+    except Exception:
+        return None
+
+def _compute_mismatch_report(extracted_fields: dict, verification: dict) -> dict:
+    """Compare extracted vs university data and compute simple status + per-field mismatches."""
+    report = {
+        "name": "not_available",
+        "cgpa": "not_available",
+        "sgpa": "not_available",
+    }
+
+    if not verification or not verification.get("student_verified"):
+        return {
+            "report": report,
+            "simple_status": "not verified",
+        }
+
+    matched = verification.get("matched_student") or verification.get("matched_certificate") or {}
+
+    # Name comparison
+    ext_name = extracted_fields.get("student_name")
+    uni_name = matched.get("student_name") or matched.get("name")
+    if ext_name and uni_name:
+        report["name"] = "match" if _normalize_text(ext_name) == _normalize_text(uni_name) else "mismatch"
+    else:
+        report["name"] = "not_available"
+
+    # CGPA comparison
+    ext_cgpa = _parse_float(extracted_fields.get("cgpa"))
+    uni_cgpa = _parse_float(matched.get("cgpa"))
+    if ext_cgpa is not None and uni_cgpa is not None:
+        report["cgpa"] = "match" if abs(ext_cgpa - uni_cgpa) <= 0.05 else "mismatch"
+    else:
+        report["cgpa"] = "not_available"
+
+    # SGPA comparison - usually not available in university summary; mark not_available if uni missing
+    ext_sgpa = _parse_float(extracted_fields.get("sgpa"))
+    uni_sgpa = _parse_float(matched.get("sgpa"))
+    if ext_sgpa is not None and uni_sgpa is not None:
+        report["sgpa"] = "match" if abs(ext_sgpa - uni_sgpa) <= 0.05 else "mismatch"
+    else:
+        report["sgpa"] = "not_available"
+
+    any_mismatch = any(v == "mismatch" for v in report.values())
+    simple_status = "mismatch" if any_mismatch else "verified"
+    return {"report": report, "simple_status": simple_status}
+
 # Authentication endpoints
 @api_bp.route("/auth/register", methods=['POST'])
 def register():
@@ -198,6 +264,9 @@ def upload_certificate():
         
         # Verify certificate against university database
         verification = verify_certificate_with_university(extracted_fields)
+
+        # Compute simple status + mismatch report (name, cgpa, sgpa)
+        mismatch = _compute_mismatch_report(extracted_fields, verification)
         
         cert = Certificate(
             image_path=str(processed_path), 
@@ -239,6 +308,26 @@ def upload_certificate():
             field_type='verification'
         )
         db_session.add(verification_field)
+
+        # Store simple status and mismatch report as separate fields for retrieval
+        simple_status_field = ExtractedField(
+            certificate_id=cert.id,
+            key='verification_simple_status',
+            value=mismatch.get('simple_status'),
+            confidence=1.0,
+            field_type='verification'
+        )
+        db_session.add(simple_status_field)
+
+        mismatch_report_field = ExtractedField(
+            certificate_id=cert.id,
+            key='verification_mismatch_report',
+            value=str(mismatch.get('report')),
+            confidence=1.0,
+            field_type='verification'
+        )
+        db_session.add(mismatch_report_field)
+
         db_session.commit()
         
         # Create structured tabular response with enhanced fields
@@ -267,6 +356,8 @@ def upload_certificate():
             "summary": summary,
             "tabular_data": tabular_data,
             "verification": verification,
+            "mismatch": mismatch.get('report'),
+            "simple_status": mismatch.get('simple_status'),
             "confidence_score": verification.get('confidence_score', 0.0)
         }), 201
         
@@ -287,10 +378,20 @@ def list_certificates():
         for cert in certs:
             # Build map of extracted fields for quick lookup
             fields_map = {}
+            verification_map = None
             for f in cert.fields:
                 if f.field_type == 'extracted':
                     fields_map[f.key] = f.value
+                elif f.field_type == 'verification' and f.key == 'verification_result':
+                    try:
+                        import ast
+                        verification_map = ast.literal_eval(f.value)
+                    except Exception:
+                        verification_map = None
             
+            # Simple status for listing
+            mismatch = _compute_mismatch_report(fields_map, verification_map or {})
+
             tabular_data = {
                 "student_name": fields_map.get("student_name", "-"),
                 "degree": fields_map.get("degree", "-"),
@@ -307,7 +408,8 @@ def list_certificates():
                 "id": cert.id,
                 "status": cert.status,
                 "created_at": cert.created_at.isoformat(),
-                "tabular_data": tabular_data
+                "tabular_data": tabular_data,
+                "simple_status": mismatch.get('simple_status')
             })
         
         return jsonify({"certificates": result, "count": len(result), "limit": limit, "offset": offset})
@@ -332,11 +434,12 @@ def get_certificate(cert_id: int):
             if field.field_type == 'ai_summary':
                 summary = field.value
             elif field.field_type == 'verification':
-                try:
-                    import ast
-                    verification = ast.literal_eval(field.value)
-                except:
-                    verification = {"student_verified": False, "enrollment_verified": False, "confidence_score": 0.0}
+                if field.key == 'verification_result':
+                    try:
+                        import ast
+                        verification = ast.literal_eval(field.value)
+                    except:
+                        verification = {"student_verified": False, "enrollment_verified": False, "confidence_score": 0.0}
             elif field.field_type == 'extracted':
                 extracted_fields[field.key] = {"value": field.value, "confidence": field.confidence}
         
@@ -360,6 +463,10 @@ def get_certificate(cert_id: int):
             "subjects": extracted_fields.get("subjects", {}).get("value", [])
         }
         
+        # Compute mismatch and simple status on the fly
+        flat_extracted = {k: v.get('value') for k, v in extracted_fields.items()}
+        mismatch = _compute_mismatch_report(flat_extracted, verification)
+
         return jsonify({
             "id": cert.id,
             "status": cert.status,
@@ -367,6 +474,8 @@ def get_certificate(cert_id: int):
             "summary": summary,
             "tabular_data": tabular_data,
             "verification": verification,
+            "mismatch": mismatch.get('report'),
+            "simple_status": mismatch.get('simple_status'),
             "field_count": len(extracted_fields)
         })
         
@@ -490,13 +599,54 @@ def reverify_certificate(cert_id: int):
                 field_type='verification'
             )
             db_session.add(verification_field)
+
+        # Recompute and store simple status + mismatch report
+        extracted_fields_flat = {}
+        for field in cert.fields:
+            if field.field_type == 'extracted':
+                extracted_fields_flat[field.key] = field.value
+        mismatch = _compute_mismatch_report(extracted_fields_flat, verification)
+
+        # simple status
+        simple_status_field = db_session.query(ExtractedField).filter(
+            ExtractedField.certificate_id == cert_id,
+            ExtractedField.key == 'verification_simple_status'
+        ).first()
+        if simple_status_field:
+            simple_status_field.value = mismatch.get('simple_status')
+        else:
+            db_session.add(ExtractedField(
+                certificate_id=cert.id,
+                key='verification_simple_status',
+                value=mismatch.get('simple_status'),
+                confidence=1.0,
+                field_type='verification'
+            ))
+
+        # mismatch report
+        mismatch_field = db_session.query(ExtractedField).filter(
+            ExtractedField.certificate_id == cert_id,
+            ExtractedField.key == 'verification_mismatch_report'
+        ).first()
+        if mismatch_field:
+            mismatch_field.value = str(mismatch.get('report'))
+        else:
+            db_session.add(ExtractedField(
+                certificate_id=cert.id,
+                key='verification_mismatch_report',
+                value=str(mismatch.get('report')),
+                confidence=1.0,
+                field_type='verification'
+            ))
         
         db_session.commit()
         
         return jsonify({
             "success": True,
             "message": "Certificate re-verified successfully",
-            "verification": verification
+            "verification": verification,
+            "mismatch": mismatch.get('report'),
+            "simple_status": mismatch.get('simple_status')
         })
         
     except Exception as e:

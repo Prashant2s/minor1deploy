@@ -460,70 +460,38 @@ export default function RecordDetail() {
 
             {/* Verification Results */}
             {data.verification && (
-              <div
-                style={{
-                  marginTop: "24px",
-                  padding: "16px",
-                  backgroundColor: data.verification.student_verified
-                    ? "#113d26"
-                    : "#401f23",
-                  border:
-                    "1px solid " +
-                    (data.verification.student_verified
-                      ? "#205e3b"
-                      : "#6a2731"),
-                  borderRadius: "4px",
-                  color: "#e9f5ee",
-                }}
-              >
-                <h4
-                  style={{
-                    marginTop: 0,
-                    color: data.verification.student_verified
-                      ? "#a8f0c4"
-                      : "#f3b2bc",
-                  }}
-                >
-                  University Verification
-                </h4>
-                <p style={{ margin: "8px 0" }}>
-                  <strong>Student Verified:</strong>{" "}
-                  <span
+              (() => {
+                const status = (data.simple_status || '').toLowerCase();
+                const colors = status === 'verified'
+                  ? { bg: '#113d26', border: '#205e3b', header: '#a8f0c4', text: '#e9f5ee', label: '✅ VERIFIED' }
+                  : status === 'mismatch'
+                  ? { bg: '#3d3511', border: '#5e5520', header: '#f0e3a8', text: '#f5f0e9', label: '⚠️ MISMATCH' }
+                  : { bg: '#401f23', border: '#6a2731', header: '#f3b2bc', text: '#f5e9eb', label: '❌ NOT VERIFIED' };
+                return (
+                  <div
                     style={{
-                      color: data.verification.student_verified
-                        ? "#a8f0c4"
-                        : "#f3b2bc",
-                      fontWeight: "bold",
+                      marginTop: "24px",
+                      padding: "16px",
+                      backgroundColor: colors.bg,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: "4px",
+                      color: colors.text,
                     }}
                   >
-                    {data.verification.student_verified ? "YES" : "NO"}
-                  </span>
-                </p>
-                <p style={{ margin: "8px 0" }}>
-                  <strong>Enrollment Number:</strong>{" "}
-                  <span
-                    style={{
-                      color: "#a8f0c4",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {tabularData.enrollment_number || "-"}
-                  </span>
-                </p>
-                <p style={{ margin: "8px 0" }}>
-                  <strong>Certificate Match:</strong>{" "}
-                  <span
-                    style={{
-                      color: data.verification.student_verified
-                        ? "#a8f0c4"
-                        : "#f3b2bc",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {data.verification.student_verified ? "YES" : "NO"}
-                  </span>
-                </p>
-              </div>
+                    <h4 style={{ marginTop: 0, color: colors.header }}>University Verification — {colors.label}</h4>
+                    <p style={{ margin: "8px 0" }}>
+                      <strong>Enrollment Number:</strong>{" "}
+                      <span style={{ color: colors.header, fontWeight: "bold" }}>
+                        {tabularData.enrollment_number || "-"}
+                      </span>
+                    </p>
+                    <p style={{ margin: "8px 0" }}>
+                      <strong>Confidence:</strong>{" "}
+                      {Math.round((data.verification?.confidence_score || 0) * 100)}%
+                    </p>
+                  </div>
+                );
+              })()
             )}
           </div>
         </div>
