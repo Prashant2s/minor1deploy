@@ -70,20 +70,29 @@ export default function RecordDetail() {
         responseType: "blob",
       });
 
+      // Get filename from Content-Disposition header or use fallback
+      const contentDisposition = response.headers['content-disposition'];
+      let downloadFilename = data?.original_filename || `certificate_${id}.png`;
+      
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (filenameMatch) {
+          downloadFilename = filenameMatch[1];
+        }
+      }
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute(
-        "download",
-        data.original_filename || `certificate_${id}.png`
-      );
+      link.setAttribute("download", downloadFilename);
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Download failed:", err);
-      alert("Download failed. Please try again.");
+      const errorMsg = err?.response?.data?.error || err.message || "Download failed";
+      alert(`Download failed: ${errorMsg}. Please try again.`);
     }
   };
 

@@ -408,6 +408,7 @@ def list_certificates():
                 "id": cert.id,
                 "status": cert.status,
                 "created_at": cert.created_at.isoformat(),
+                "original_filename": cert.original_filename,
                 "tabular_data": tabular_data,
                 "simple_status": mismatch.get('simple_status')
             })
@@ -471,6 +472,7 @@ def get_certificate(cert_id: int):
             "id": cert.id,
             "status": cert.status,
             "created_at": cert.created_at.isoformat(),
+            "original_filename": cert.original_filename,
             "summary": summary,
             "tabular_data": tabular_data,
             "verification": verification,
