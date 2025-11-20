@@ -1,4 +1,4 @@
-# AI-Powered University Certificate Verifier
+# Certificate Verification Using AI Summarizer
 
 A certificate verification system that uses AI to extract information from uploaded certificates and verify them against a university database. The project includes a Python backend, a web portal, and Docker-based deployment.
 
